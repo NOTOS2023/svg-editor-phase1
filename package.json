@@ -1,0 +1,16 @@
+{
+  "name": "svg-editor-phase1",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Object-oriented SVG CLI editor — Lab 1 Phase 1",
+  "type": "module",
+  "engines": { "node": ">=18.18" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "cli": "npm run build --silent && node dist/src/main.js",
+    "test": "npm run build --silent && node --test dist/test",
+    "check": "npm run build --silent && node --test dist/test && node dist/tools/ArchitectureCheck.js"
+  },
+  "dependencies": { "@xmldom/xmldom": "^0.8.11" },
+  "devDependencies": { "@types/node": "^18.19.130", "typescript": "~5.9.3" }
+}
