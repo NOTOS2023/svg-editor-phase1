@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect id="bg" x="0" y="0" width="800" height="600" fill="#ffffff"/>
+  <text id="title" x="20" y="40">My Diagram</text>
+  <ellipse id="e1" cx="380" cy="120" rx="60" ry="30" fill="#a7d8f0"/>
+  <line id="edge" x1="160" y1="110" x2="200" y2="110" stroke="black"/>
+  <g id="markers">
+    <circle id="c1" cx="156" cy="120" r="24" fill="red"/>
+    <rect id="box" x="240" y="96" width="72" height="72" fill="#3366ff"/>
+    <text id="caption" x="90" y="180">组合图形</text>
+  </g>
+</svg>

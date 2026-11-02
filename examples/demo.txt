@@ -1,0 +1,24 @@
+# Successful, replayable tour of all six built-in shape types.
+init 800 600
+create rect bg 0 0 800 600 #ffffff
+create text title 20 40 "My Diagram"
+create circle c1 100 100 20 red
+create rect box 200 80 60 60 #3366ff
+create ellipse e1 380 120 60 30 #a7d8f0
+create line edge 160 110 200 110 black
+group markers c1 box
+move c1 30 0
+undo
+redo
+set title text "My Diagram v2"
+undo
+scale markers 1.2
+create g detail in markers
+create text caption 90 180 "组合图形" in detail
+ungroup detail
+back bg
+front markers
+tree
+show c1
+canvas
+save examples/demo.svg

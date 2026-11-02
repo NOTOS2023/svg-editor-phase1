@@ -1,0 +1,7 @@
+# Imports the assignment fixture; rect without id gets a warning and rect1.
+read examples/other.svg
+tree
+move g1 40 50
+undo
+redo
+save examples/imported.svg
