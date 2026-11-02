@@ -101,6 +101,8 @@ test("unsupported transforms fail rather than disappearing during save", () => {
   for (const transform of ["rotate(30)", "scale(2,3)", "scale(0)", "scale(-1)", "translate(foo)", "translate(1) garbage", "matrix(1,0,0,1,0,0)", ""]) {
     assert.throws(() => codec.decode(`<svg><g id="g" transform="${transform}"/></svg>`), /unsupported transform:/);
   }
+  assert.throws(() => codec.decode('<svg><rect id="r" rx="3" transform="scale(2)"/></svg>'), /unsupported scaled SVG attribute: rx/);
+  assert.throws(() => codec.decode('<svg><line id="l" stroke-dasharray="2 4" transform="scale(2)"/></svg>'), /unsupported scaled SVG attribute: stroke-dasharray/);
 });
 
 test("bad XML, DTD/entity declarations and foreign namespaces are rejected", () => {

@@ -5,6 +5,7 @@ import { SvgDocument } from '../src/domain/SvgDocument.js';
 import { Group } from '../src/domain/Group.js';
 import { Rect } from '../src/domain/Rect.js';
 import { Circle } from '../src/domain/Circle.js';
+import { SvgNumber } from '../src/domain/SvgNumber.js';
 
 const factory = new ShapeFactory();
 
@@ -32,6 +33,24 @@ test('unsupported types, invalid parameter counts and invalid numbers are reject
   assert.throws(() => factory.create('circle', 'c', ['NaN', '0', '1']), /invalid number/);
   assert.throws(() => new Rect('bad id', 0, 0, 1, 1), /invalid id/);
   assert.throws(() => new Circle('c', 0, 0, -1), /r must be non-negative/);
+});
+
+test('geometry uses one decimal grammar and rejects non-SVG numeric syntaxes', () => {
+  for (const token of ['0x10', '0b10', '0o10', '', ' ', ' 1 ', 'NaN', 'Infinity', '1e309', '1_000']) {
+    assert.throws(() => SvgNumber.parse(token), /invalid number/);
+    assert.throws(() => factory.create('rect', 'r', [token, '0', '1', '1']), /invalid number/);
+    const rect = new Rect('r', 0, 0, 1, 1);
+    assert.throws(() => rect.setAttribute('x', token), /invalid number/);
+    assert.throws(() => rect.setAttribute('stroke-width', token), /invalid number/);
+    assert.equal(rect.attributes().x, '0');
+  }
+  const rect = factory.create('rect', 'r', ['1e2', '-2.5E-1', '.5', '1.']);
+  assert.deepEqual(rect.attributes(), { x: '100', y: '-0.25', width: '0.5', height: '1' });
+  rect.setAttribute('x', '+2e1');
+  rect.setAttribute('stroke-width', '1.25e-1');
+  assert.equal(rect.attributes().x, '20');
+  assert.equal(rect.attributes()['stroke-width'], '0.125');
+  assert.equal(Object.is(SvgNumber.parse('-0'), -0), false);
 });
 
 test('each geometric component moves all positions and scales positions and sizes', () => {

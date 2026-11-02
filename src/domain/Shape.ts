@@ -1,4 +1,5 @@
 import type { Group } from './Group.js';
+import { SvgNumber } from './SvgNumber.js';
 
 /** A polymorphic component. Mutable SVG state is only exposed as detached values. */
 export abstract class Shape {
@@ -62,11 +63,7 @@ export abstract class Shape {
   }
 
   protected number(value: string | number, name: string): number {
-    const number = typeof value === 'number' ? value : Number(value);
-    if ((typeof value === 'string' && value.trim() === '') || !Number.isFinite(number)) {
-      throw new Error(`invalid number for ${name}: ${value}`);
-    }
-    return Object.is(number, -0) ? 0 : number;
+    return SvgNumber.parse(value, name);
   }
 
   protected positiveScale(factor: number): void {

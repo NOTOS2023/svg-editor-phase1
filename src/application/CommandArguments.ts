@@ -1,4 +1,5 @@
 import { Argument } from './Argument.js';
+import { SvgNumber } from '../domain/SvgNumber.js';
 
 export class CommandArguments {
   public constructor(private readonly tokens: readonly Argument[], private readonly usage: string) {}
@@ -12,13 +13,7 @@ export class CommandArguments {
     return token.value;
   }
   public number(index: number): number {
-    const value = this.value(index);
-    if (value.trim() === '' || !/^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(value)) {
-      throw new Error(`invalid number: ${value}`);
-    }
-    const number = Number(value);
-    if (!Number.isFinite(number)) { throw new Error(`invalid number: ${value}`); }
-    return number;
+    return SvgNumber.parse(this.value(index));
   }
   public isKeyword(index: number, keyword: string): boolean {
     return this.tokens[index]?.isKeyword(keyword) ?? false;

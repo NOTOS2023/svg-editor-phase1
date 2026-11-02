@@ -5,6 +5,7 @@ import { Ellipse } from './Ellipse.js';
 import { Line } from './Line.js';
 import { Text } from './Text.js';
 import { Group } from './Group.js';
+import { SvgNumber } from './SvgNumber.js';
 
 interface ShapeDefinition {
   readonly geometry: readonly string[];
@@ -68,10 +69,6 @@ export class ShapeFactory {
 
   private numeric(parameters: readonly string[], index: number): number {
     const token = parameters[index];
-    const value = Number(token);
-    if (token === undefined || token.trim() === '' || !Number.isFinite(value)) {
-      throw new Error(`invalid number: ${token ?? ''}`);
-    }
-    return Object.is(value, -0) ? 0 : value;
+    return SvgNumber.parse(token ?? '');
   }
 }

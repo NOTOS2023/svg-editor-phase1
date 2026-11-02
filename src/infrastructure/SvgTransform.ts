@@ -2,6 +2,11 @@ import type { Shape } from "../domain/Shape.js";
 
 /** The Phase 1 transform subset, reduced to p' = scale * p + translation. */
 export class SvgTransform {
+  private static readonly scaledAttributes = new Set([
+    "fill", "stroke", "stroke-width", "font-size", "text-anchor", "font-family", "font-weight", "font-style",
+    "opacity", "fill-opacity", "stroke-opacity", "stroke-linecap", "stroke-linejoin", "class", "role",
+  ]);
+  private static readonly geometry = new Set(["x", "y", "width", "height", "cx", "cy", "r", "rx", "ry", "x1", "y1", "x2", "y2"]);
   private constructor(
     private readonly factor: number,
     private readonly dx: number,
@@ -57,6 +62,7 @@ export class SvgTransform {
     // SVG transforms also scale text and strokes; CLI scale only changes geometry.
     // Materialize inherited defaults on this subtree, then scale explicit overrides.
     if (this.factor !== 1) {
+      this.validateScaledAttributes(shape);
       const attrs = shape.attributes();
       if (attrs["font-size"] === undefined) shape.importAttribute("font-size", inherited["font-size"] ?? "16");
       if (attrs["stroke-width"] === undefined) shape.importAttribute("stroke-width", inherited["stroke-width"] ?? "1");
@@ -78,5 +84,18 @@ export class SvgTransform {
       shape.importAttribute(name, String(scaled));
     }
     for (const child of shape.children) this.scalePresentation(child);
+  }
+
+  private validateScaledAttributes(shape: Shape): void {
+    for (const [name, value] of Object.entries(shape.attributes())) {
+      if (SvgTransform.scaledAttributes.has(name) || name.startsWith("data-") || name.startsWith("aria-")) continue;
+      if (SvgTransform.geometry.has(name)) {
+        // Ask the component whether this is its geometry. For example ellipse rx
+        // scales through GeometryShape, whereas imported rect corner rx does not.
+        try { shape.setAttribute(name, value); continue; } catch { /* Reject below. */ }
+      }
+      throw new Error(`unsupported scaled SVG attribute: ${name}`);
+    }
+    for (const child of shape.children) this.validateScaledAttributes(child);
   }
 }
